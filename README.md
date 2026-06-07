@@ -25,7 +25,7 @@
 
 | Resource | Link |
 |---|---|
-| 🌐 **Live Demo** | [Insert Vercel Link Here] |
+| 🌐 **Live Demo** | [Vercel Link Here](https://frontend-product-management-app.vercel.app/) |
 | 🚀 **Postman API Collection** | [postman_collection.json](./postman_collection.json) |
 
 > [!CAUTION]
