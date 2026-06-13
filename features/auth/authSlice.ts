@@ -26,8 +26,8 @@ if (tokenFromCookie) {
 const initialState: AuthState = {
   user: userFromToken,
   // Rehydrate token from cookie on slice init (handles page refresh)
-  token: typeof window !== "undefined" ? (getToken() ?? null) : null,
-  isAuthenticated: typeof window !== "undefined" ? Boolean(getToken()) : false,
+  token: tokenFromCookie || null,
+  isAuthenticated: !!tokenFromCookie,
 };
 
 const authSlice = createSlice({
@@ -40,11 +40,17 @@ const authSlice = createSlice({
      */
     setCredentials: (state, action: PayloadAction<User>) => {
       const { refreshToken, ...userProfile } = action.payload;
+      const accessToken = userProfile.accessToken || userProfile.token; // Support both token and accessToken fields
+
+      if (!accessToken) {
+        console.warn("No access token found in setCredentials payload");
+        return;
+      }
       state.user = userProfile;
-      state.token = userProfile.accessToken;
+      state.token = accessToken;
       state.isAuthenticated = true;
       // Persist token in cookie for middleware route protection
-      setToken(userProfile.accessToken);
+      setToken(accessToken);
     },
 
     /**
