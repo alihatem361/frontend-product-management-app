@@ -18,6 +18,8 @@ let userFromToken = null;
 if (tokenFromCookie) {
   try {
     userFromToken = jwtDecode<User>(tokenFromCookie);
+    // log the decoded user for debugging purposes
+    console.log("Decoded user from token:", userFromToken);
   } catch (error) {
     console.error("Failed to decode JWT token:", error);
   }
@@ -39,7 +41,7 @@ const authSlice = createSlice({
      * Saves the user profile + token to Redux and persists the token in a cookie.
      */
     setCredentials: (state, action: PayloadAction<User>) => {
-      const { refreshToken, ...userProfile } = action.payload;
+      const { ...userProfile } = action.payload;
       const accessToken = userProfile.accessToken || userProfile.token; // Support both token and accessToken fields
 
       if (!accessToken) {

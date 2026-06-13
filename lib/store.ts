@@ -5,10 +5,11 @@
  * The RTK Query middleware handles caching, invalidation, and polling.
  */
 
-import { configureStore } from '@reduxjs/toolkit';
-import { dummyJsonApi } from '@/features/api/dummyJsonApi';
-import authReducer from '@/features/auth/authSlice';
-import filterReducer from '@/features/filter/filterSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import { dummyJsonApi } from "@/features/api/dummyJsonApi";
+import authReducer from "@/features/auth/authSlice";
+import filterReducer from "@/features/filter/filterSlice";
+import cartReducer from "@/features/cart/cartSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,9 @@ export const store = configureStore({
 
     // RTK Query API reducer (manages cache, loading, error states)
     [dummyJsonApi.reducerPath]: dummyJsonApi.reducer,
+
+    // Cart state
+    cart: cartReducer,
   },
 
   middleware: (getDefaultMiddleware) =>

@@ -36,7 +36,7 @@ export interface RegisterRequest {
 
 /** Stored in Redux auth slice (token excluded — kept in cookie) */
 export interface AuthState {
-  user: Omit<User, 'token' | 'refreshToken'> | null;
+  user: Omit<User, "token" | "refreshToken"> | null;
   token: string | null;
   isAuthenticated: boolean;
 }
@@ -116,5 +116,36 @@ export interface FilterState {
   searchQuery: string;
   selectedCategory: string | null;
   page: number;
+  limit: number;
+}
+
+// cartState
+
+export interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  quantity: number;
+  total: number;
+  discountPercentage: number;
+  discountedTotal: number;
+  thumbnail: string;
+}
+
+export interface Cart {
+  id: number;
+  products: CartItem[];
+  total: number;
+  discountedTotal: number;
+  userId: number;
+  totalProducts: number;
+  totalQuantity: number;
+}
+
+// التايب بتاع الـ Response اللي بييجي من السيرفر
+export interface UserCartsResponse {
+  carts: Cart[];
+  total: number;
+  skip: number;
   limit: number;
 }

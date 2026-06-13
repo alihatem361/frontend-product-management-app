@@ -9,8 +9,8 @@
  *  - Auth mutations: no cache (side-effectful)
  */
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '@/lib/store';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "@/lib/store";
 import type {
   User,
   LoginRequest,
@@ -18,12 +18,15 @@ import type {
   Product,
   ProductsResponse,
   Category,
-} from '@/types';
+  CartItem,
+  CartState,
+  CartResponse,
+} from "@/types";
 
 export const dummyJsonApi = createApi({
-  reducerPath: 'dummyJsonApi',
+  reducerPath: "dummyJsonApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://dummyjson.com',
+    baseUrl: "https://dummyjson.com",
     /**
      * Attach the JWT Bearer token (from Redux state) to every request.
      * This allows authenticated endpoints to work seamlessly after login.
@@ -31,7 +34,7 @@ export const dummyJsonApi = createApi({
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
@@ -40,7 +43,7 @@ export const dummyJsonApi = createApi({
   // ---------------------------------------------------------------------------
   // Tag types for cache invalidation
   // ---------------------------------------------------------------------------
-  tagTypes: ['Product', 'Products', 'Categories', 'User'],
+  tagTypes: ["Product", "Products", "Categories", "User", "Cart"],
 
   endpoints: (builder) => ({
     // -------------------------------------------------------------------------
@@ -50,8 +53,8 @@ export const dummyJsonApi = createApi({
     /** Login — POST /auth/login */
     login: builder.mutation<User, LoginRequest>({
       query: (credentials) => ({
-        url: '/auth/login',
-        method: 'POST',
+        url: "/auth/login",
+        method: "POST",
         body: { ...credentials, expiresInMins: 60 },
       }),
     }),
@@ -62,8 +65,8 @@ export const dummyJsonApi = createApi({
      */
     register: builder.mutation<User, RegisterRequest>({
       query: (userData) => ({
-        url: '/users/add',
-        method: 'POST',
+        url: "/users/add",
+        method: "POST",
         body: userData,
       }),
     }),
@@ -73,7 +76,10 @@ export const dummyJsonApi = createApi({
     // -------------------------------------------------------------------------
 
     /** Fetch paginated products — GET /products?limit=&skip= */
-    getProducts: builder.query<ProductsResponse, { limit: number; skip: number }>({
+    getProducts: builder.query<
+      ProductsResponse,
+      { limit: number; skip: number }
+    >({
       query: ({ limit, skip }) =>
         `/products?limit=${limit}&skip=${skip}&select=id,title,price,thumbnail,category,rating,stock`,
       // Cache each page separately for 5 minutes
@@ -81,18 +87,24 @@ export const dummyJsonApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.products.map(({ id }) => ({ type: 'Product' as const, id })),
-              { type: 'Products', id: 'LIST' },
+              ...result.products.map(({ id }) => ({
+                type: "Product" as const,
+                id,
+              })),
+              { type: "Products", id: "LIST" },
             ]
-          : [{ type: 'Products', id: 'LIST' }],
+          : [{ type: "Products", id: "LIST" }],
     }),
 
     /** Search products by title — GET /products/search?q= */
-    searchProducts: builder.query<ProductsResponse, { q: string; limit: number; skip: number }>({
+    searchProducts: builder.query<
+      ProductsResponse,
+      { q: string; limit: number; skip: number }
+    >({
       query: ({ q, limit, skip }) =>
         `/products/search?q=${encodeURIComponent(q)}&limit=${limit}&skip=${skip}&select=id,title,price,thumbnail,category,rating,stock`,
       keepUnusedDataFor: 120,
-      providesTags: [{ type: 'Products', id: 'SEARCH' }],
+      providesTags: [{ type: "Products", id: "SEARCH" }],
     }),
 
     /** Fetch products by category — GET /products/category/{slug} */
@@ -106,17 +118,20 @@ export const dummyJsonApi = createApi({
       providesTags: (result, _error, { category }) =>
         result
           ? [
-              ...result.products.map(({ id }) => ({ type: 'Product' as const, id })),
-              { type: 'Products', id: `CATEGORY_${category}` },
+              ...result.products.map(({ id }) => ({
+                type: "Product" as const,
+                id,
+              })),
+              { type: "Products", id: `CATEGORY_${category}` },
             ]
-          : [{ type: 'Products', id: `CATEGORY_${category}` }],
+          : [{ type: "Products", id: `CATEGORY_${category}` }],
     }),
 
     /** Get a single product by ID — GET /products/{id} */
     getProductById: builder.query<Product, number>({
       query: (id) => `/products/${id}`,
       keepUnusedDataFor: 120,
-      providesTags: (_result, _error, id) => [{ type: 'Product', id }],
+      providesTags: (_result, _error, id) => [{ type: "Product", id }],
     }),
 
     // -------------------------------------------------------------------------
@@ -125,9 +140,27 @@ export const dummyJsonApi = createApi({
 
     /** Fetch all categories — GET /products/categories */
     getCategories: builder.query<Category[], void>({
-      query: () => '/products/categories',
+      query: () => "/products/categories",
       keepUnusedDataFor: 600, // Cache for 10 minutes
-      providesTags: ['Categories'],
+      providesTags: ["Categories"],
+    }),
+
+    // -------------------------------------------------------------------------
+    // CART from DummyJSON (mocked) — GET /carts
+    // -------------------------------------------------------------------------
+    /**
+     * Fetch the user's cart — GET /carts/user/{userId}
+     * Note: DummyJSON does not persist carts, so this is a mocked endpoint.
+     * In a real app, this would be tied to the authenticated user.
+     */
+    // -------------------------------------------------------------------------
+
+    getCart: builder.query<CartResponse, number>({
+      query: (userId) => `/carts/user/${userId}`,
+      keepUnusedDataFor: 300,
+      providesTags: (_result, _error, userId) => [
+        { type: "Cart", id: `USER_${userId}` },
+      ],
     }),
   }),
 });
@@ -141,4 +174,5 @@ export const {
   useGetProductsByCategoryQuery,
   useGetProductByIdQuery,
   useGetCategoriesQuery,
+  useGetCartQuery,
 } = dummyJsonApi;
