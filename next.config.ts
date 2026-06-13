@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.1.6"],
   images: {
     /**
      * Allow Next.js Image component to load images from DummyJSON CDN.
