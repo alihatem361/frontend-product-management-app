@@ -43,7 +43,7 @@ export const dummyJsonApi = createApi({
   // ---------------------------------------------------------------------------
   // Tag types for cache invalidation
   // ---------------------------------------------------------------------------
-  tagTypes: ["Product", "Products", "Categories", "User", "Cart"],
+  tagTypes: ["Product", "Products", "Categories", "User", "Cart", "Post", "Posts"],
 
   endpoints: (builder) => ({
     // -------------------------------------------------------------------------

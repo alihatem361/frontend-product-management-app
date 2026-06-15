@@ -35,11 +35,10 @@ export function CartItemCard({ item }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* هنا هتحط الـ Buttons بتاعة الـ + والـ - لاحقاً */}
         <span className="bg-slate-700 px-3 py-1 rounded-md">
-          الكمية: {item.quantity}
+          Qty: {item.quantity}
         </span>
-        <button className="text-red-400 hover:text-red-300">حذف</button>
+        <button className="text-red-400 hover:text-red-300">Remove</button>
       </div>
     </div>
   );
