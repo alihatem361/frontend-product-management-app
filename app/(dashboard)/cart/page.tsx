@@ -1,18 +1,16 @@
 "use client";
-import { useState, useEffect } from "react"; // استورد دول
+import { useState, useEffect } from "react";
 
 import { useAppSelector } from "@/lib/hooks";
-import { useGetCartQuery } from "@/features/api/dummyJsonApi"; // افترضنا وجود الكويري ده
-import { CartItemCard } from "@/components/cart/CartItemCard"; // افترضنا وجود الكومبوننت ده
-import { CartSummary } from "@/components/cart/CartSummary"; // افترضنا وجود الكومبوننت ده
-import { Skeleton } from "@/components/ui/Skeleton"; // الكومبوننت اللي بتستخدمه
+import { useGetCartQuery } from "@/features/api/dummyJsonApi";
+import { CartItemCard } from "@/components/cart/CartItemCard";
+import { CartSummary } from "@/components/cart/CartSummary";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { CartItem } from "@/types";
 export default function CartPage() {
   const userId = useAppSelector((state) => state.auth.user?.id);
 
-  // بنجيب السلة بناءً على الـ userId
   const { data: cart, isLoading, isError } = useGetCartQuery(userId!);
-  //   log the cart data for debugging
   useEffect(() => {
     console.log("Fetched cart data:", cart?.carts?.[0]);
   }, [cart]);
@@ -36,10 +34,10 @@ export default function CartPage() {
     return (
       <div className="container mx-auto py-20 text-center">
         <h2 className="text-2xl font-bold text-slate-400">
-          سلتك فارغة حالياً!
+          Your cart is empty!
         </h2>
         <p className="mt-2 text-slate-500">
-          ابحث عن منتجات رائعة وأضفها للسلة.
+          Find great products and add them to your cart.
         </p>
       </div>
     );
@@ -47,10 +45,9 @@ export default function CartPage() {
 
   return (
     <main className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-8">سلة التسوق</h1>
+      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* قائمة المنتجات */}
         {activeCart?.products && activeCart.products.length > 0 ? (
           <div className="lg:col-span-2 space-y-4">
             {activeCart.products.map((item: CartItem) => (
@@ -60,15 +57,14 @@ export default function CartPage() {
         ) : (
           <div className="lg:col-span-2 text-center py-20">
             <h2 className="text-2xl font-bold text-slate-400">
-              سلتك فارغة حالياً!
+              Your cart is empty!
             </h2>
             <p className="mt-2 text-slate-500">
-              ابحث عن منتجات رائعة وأضفها للسلة.
+              Find great products and add them to your cart.
             </p>
           </div>
         )}
 
-        {/* ملخص الفاتورة */}
         <div className="lg:col-span-1">
           {activeCart && (
             <CartSummary
