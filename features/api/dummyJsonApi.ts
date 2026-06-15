@@ -18,9 +18,7 @@ import type {
   Product,
   ProductsResponse,
   Category,
-  CartItem,
-  CartState,
-  CartResponse,
+  UserCartsResponse,
 } from "@/types";
 
 export const dummyJsonApi = createApi({
@@ -155,7 +153,7 @@ export const dummyJsonApi = createApi({
      */
     // -------------------------------------------------------------------------
 
-    getCart: builder.query<CartResponse, number>({
+    getCart: builder.query<UserCartsResponse, number>({
       query: (userId) => `/carts/user/${userId}`,
       keepUnusedDataFor: 300,
       providesTags: (_result, _error, userId) => [
