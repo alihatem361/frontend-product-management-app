@@ -158,6 +158,12 @@ export interface CartItem {
   thumbnail: string;
 }
 
+export interface CartState {
+  items: CartItem[];
+  totalQuantity: number;
+  totalPrice: number;
+}
+
 export interface Cart {
   id: number;
   products: CartItem[];
